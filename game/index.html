@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defensores do DOM</title> <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="start-screen" class="screen active">
+        <h1>Lawn Defense</h1>
+        <p>Protect your base from the incoming horde!</p>
+        
+        <div class="difficulty-selector">
+            <label for="difficulty">Dificuldade:</label>
+            <select id="difficulty">
+                <option value="easy">Fácil</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+
+        <button id="btn-start">Iniciar Jogo</button>
+        <p id="high-score-display">Maior Onda Sobrevivida: <span id="highest-wave">0</span></p>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        
+        <header id="ui-bar">
+            <div class="stat">☀️ Energia: <span id="energy-count">50</span></div>
+            <div class="stat">❤️ Vidas: <span id="lives-count">3</span></div>
+            <div class="stat">🌊 Onda: <span id="wave-count">1</span></div>
+            <button id="btn-pause">Pausar</button>
+        </header>
+
+        <aside id="plant-selector">
+            <div class="seed-packet" data-plant-type="peashooter" data-cost="100">
+                <img src="assets/images/peashooter-icon.png" alt="Peashooter">
+                <span>100 ☀️</span>
+            </div>
+            <div class="seed-packet" data-plant-type="wallnut" data-cost="50">
+                <img src="assets/images/wallnut-icon.png" alt="Wallnut">
+                <span>50 ☀️</span>
+            </div>
+        </aside>
+
+        <main id="lawn">
+            </main>
+
+    </div>
+
+    <div id="pause-screen" class="screen hidden overlay">
+        <h2>Jogo Pausado</h2>
+        <button id="btn-resume">Voltar ao Jogo</button>
+    </div>
+
+    <div id="game-over-screen" class="screen hidden overlay">
+        <h2>Fim de Jogo!</h2>
+        <p>Você sobreviveu até a onda: <span id="final-wave"></span></p>
+        <button id="btn-restart">Tentar Novamente</button>
+    </div>
+
+    <script src="js/storage.js" defer></script>
+    <script src="js/audio.js" defer></script>
+    <script src="js/secrets.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/board.js" defer></script>
+    <script src="js/plants.js" defer></script>
+    <script src="js/zombies.js" defer></script>
+    <script src="js/collision.js" defer></script>
+    <script src="js/main.js" defer></script>
+
+</body>
+</html>
