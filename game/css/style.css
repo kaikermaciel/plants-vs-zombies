@@ -169,7 +169,12 @@ button:hover {
     grid-area: lawn;
     display: flex;
     flex-direction: column;
-    background-color: var(--lawn-green);
+    
+    /* Configurações do novo background inseridas aqui: */
+    background-image: url('../assets/images/background-day.jpg');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .lane {
@@ -177,6 +182,9 @@ button:hover {
     display: flex;
     position: relative; /* CRITICAL: Allows absolute positioning of zombies inside the lane */
     border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+    
+    /* Empurra o início das colunas para começar exatamente onde a grama começa */
+    padding-left: 22%; 
 }
 
 .cell {
@@ -198,17 +206,44 @@ button:hover {
 .plant {
     width: 60px;
     height: 60px;
-    /* Background images will be set via specific classes like .peashooter */
+}
+
+.peashooter {
+    width: 75px;  /* Aumentado para compensar o espaço invisível da imagem */
+    height: 75px; /* Deixa proporcional */
+    z-index: 5;
+
+    /* Puxa a imagem da disparervilha */
+    background-image: url('../assets/images/peashooter.png');
+    background-size: 145%; /* Dá um zoom para descartar o espaço em branco da direita */
+    background-repeat: no-repeat;
+    background-position: -15px center; /* Move o corpinho dela para o centro real do quadrado */
 }
 
 .zombie {
-    width: 60px;
-    height: 80px;
-    background-color: purple; /* Placeholder until you add sprites */
+    width: 65px;    /* Ajuste na largura para a proporção do zumbi */
+    height: 85px;   /* Ajuste na altura para ele não ficar achatado */
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    /* 'right' property will be managed by JavaScript to move it */
+    z-index: 10;    /* Garante que o zumbi ande por cima do cenário */
+
+    /* Aqui entra o seu novo zumbi: */
+    background-image: url('../assets/images/regularZombie.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+/* Estado do zumbi quando está atacando uma planta */
+.zombie.eating {
+    /* Troca a imagem para o sprite de mordida */
+    background-image: url('../assets/images/zombie-eating.png');
+    
+    /* Mantém as mesmas proporções para o zumbi não mudar de tamanho ou piscar */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
 }
 
 .projectile {
@@ -219,11 +254,10 @@ button:hover {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    /* 'left' property will be managed by JavaScript */
     box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-/* Example Sprite Animation Class (From earlier discussion) */
+/* Example Sprite Animation Class */
 .peashooter-idle {
     width: 40px; 
     height: 40px; 
@@ -236,4 +270,81 @@ button:hover {
 @keyframes playSprite {
     from { background-position: 0px 0px; }
     to { background-position: -320px 0px; }
+}
+
+/* Configuração do Girassol */
+.sunflower {
+    width: 60px;
+    height: 60px;
+    z-index: 5;
+    background-image: url('../assets/images/sunflower.png'); /* Altere para o nome real do seu arquivo se necessário */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Configuração do Sol com Imagem */
+.sun {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    cursor: pointer;
+    z-index: 50; /* Fica por cima de tudo para facilitar o clique */
+    
+    /* Configura sua imagem */
+    background-image: url('../assets/images/sun.png'); /* ⚠️ Mude para o nome exato do seu arquivo de imagem do Sol */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    /* Animação de pulsação e brilho */
+    animation: sunPulse 1.5s infinite alternate ease-in-out;
+    
+    /* Transição suave para o Sol do céu cair de forma natural */
+    transition: top 3.5s ease-out;
+}
+
+/* Animação que faz a imagem pulsar e brilhar */
+@keyframes sunPulse {
+    from { 
+        transform: scale(1); 
+        filter: drop-shadow(0 0 6px #fdd835); 
+    }
+    to { 
+        transform: scale(1.12); 
+        filter: drop-shadow(0 0 16px #fdd835); 
+    }
+}
+
+/* Animação para o Sol ficar pulando/brilhando */
+@keyframes sunPulse {
+    from { transform: scale(1); box-shadow: 0 0 10px #fdd835; }
+    to { transform: scale(1.15); box-shadow: 0 0 22px #fdd835; }
+}
+
+/* ==========================================
+   7. WALLNUT SPRITE STATES
+   ========================================== */
+.wallnut {
+    width: 60px;
+    height: 60px;
+    background-image: url('../assets/images/wallnut-states.png');
+    background-repeat: no-repeat;
+    background-size: 180px 60px; /* Redimensiona a tira de 3 frames para o tamanho do grid */
+    transition: background-position 0.2s ease;
+}
+
+/* Frame 1: Inteira */
+.wallnut-healthy {
+    background-position: 0px 0px;
+}
+
+/* Frame 2: Rachada */
+.wallnut-damaged {
+    background-position: -60px 0px;
+}
+
+/* Frame 3: Quase Quebrando */
+.wallnut-broken {
+    background-position: -120px 0px;
 }
