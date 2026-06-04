@@ -1,28 +1,31 @@
 /* ==========================================
    1. GLOBAL RESETS & VARIABLES
    ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&family=Segoe+UI:wght@400;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 :root {
     --lawn-green: #4caf50;
     --lawn-dark: #388e3c;
-    --ui-brown: #5d4037;
+    --ui-brown: #4e342e;
     --ui-light: #8d6e63;
+    --pvz-yellow: #f4ff81;
 }
 
 body {
-    background-color: #222;
+    background-color: #111;
     color: white;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Prevents scrollbars when zombies spawn off-screen */
+    overflow: hidden;
 }
 
 /* ==========================================
@@ -38,13 +41,14 @@ body {
 }
 
 .screen {
-    width: 1000px;
-    height: 600px;
+    width: 100vw;
+    height: 100vh;
     background-color: #333;
-    border: 4px solid #111;
-    border-radius: 10px;
     position: relative;
+    display: flex;
     flex-direction: column;
+    border: none;
+    border-radius: 0;
 }
 
 /* Overlays for Pause and Game Over screens */
@@ -66,38 +70,105 @@ body {
 #start-screen {
     justify-content: center;
     align-items: center;
-    background: linear-gradient(var(--lawn-dark), var(--lawn-green));
+    
+    /* Set your brand new mainScreen background image */
+    background-image: url('../assets/images/mainScreen.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.6);
+}
+
+/* The Menu Tombstone Card: Centers and makes text readable over the graphic */
+#start-screen .menu-card {
+    background: rgba(46, 34, 21, 0.85); /* Semi-transparent graveyard wood tint */
+    padding: 40px;
+    border-radius: 15px;
+    border: 5px solid #2d1f10;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 500px;
 }
 
 #start-screen h1 {
-    font-size: 4rem;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 3.5rem;
+    color: #aeea00; /* Toxic neon green */
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    
+    /* Comic book thick dark text outlines */
+    -webkit-text-stroke: 2px #1b5e20;
+    text-shadow: 4px 4px 0px #000;
+}
+
+#start-screen p {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #e0e0e0;
+    font-size: 1rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 button {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-family: 'Bangers', cursive;
+    padding: 12px 35px;
+    font-size: 1.8rem;
+    letter-spacing: 1.5px;
     cursor: pointer;
-    background-color: var(--ui-brown);
-    color: white;
-    border: 2px solid #fff;
-    border-radius: 5px;
-    margin-top: 20px;
-    transition: transform 0.2s;
+    background: linear-gradient(#795548, #4e342e); /* Wood grain gradient */
+    color: var(--pvz-yellow);
+    border: 3px solid #3e2723;
+    border-radius: 8px;
+    margin-top: 15px;
+    box-shadow: 0 5px 0px #271711, 0 8px 15px rgba(0,0,0,0.5);
+    transition: all 0.1s ease-in-out;
 }
 
 button:hover {
-    transform: scale(1.05);
-    background-color: var(--ui-light);
+    transform: translateY(-2px);
+    background: linear-gradient(#8d6e63, #5d4037);
+    color: #fff;
+    box-shadow: 0 7px 0px #271711, 0 10px 20px rgba(0,0,0,0.6);
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0px #271711, 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .difficulty-selector {
-    margin-top: 20px;
-    font-size: 1.2rem;
+    margin-top: 10px;
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: 1px;
 }
 
+.difficulty-selector select {
+    font-family: 'Bangers', cursive;
+    font-size: 1.2rem;
+    padding: 5px 15px;
+    background: #3e2723;
+    color: var(--pvz-yellow);
+    border: 2px solid #5d4037;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+}
+
+#high-score-display {
+    font-family: 'Bangers', cursive;
+    font-size: 1.3rem;
+    margin-top: 20px;
+    color: #ffb300; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
 /* ==========================================
    4. GAME PLAYING SCREEN LAYOUT
    ========================================== */
@@ -132,7 +203,6 @@ button:hover {
     padding: 5px 15px;
 }
 
-/* Plant Selector Sidebar */
 #plant-selector {
     grid-area: sidebar;
     background-color: var(--ui-light);
@@ -140,59 +210,86 @@ button:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 10px;
-    gap: 10px;
+    padding: 15px 5px;
+    gap: 12px;
+    z-index: 20;
+    box-shadow: inset -5px 0 10px rgba(0,0,0,0.3);
 }
 
+/* Optimized Seed Packet Dimensions and Layout */
 .seed-packet {
-    width: 100px;
-    height: 120px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 2px solid #fff;
-    border-radius: 5px;
+    width: 110px;
+    height: 95px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 3px solid #fff;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    padding: 6px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.15s, border-color 0.15s;
 }
 
+.seed-packet:hover {
+    transform: scale(1.04);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Forces images to sit neatly centered inside slots without bleeding out */
+.seed-packet img {
+    max-width: 55px;
+    max-height: 55px;
+    object-fit: contain; 
+}
+
+/* Thematic Text Overlay styling for costs */
+.seed-packet span {
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    color: var(--pvz-yellow);
+    text-shadow: 1px 1px 2px #000;
+    margin-top: 2px;
+}
+
+/* Shovel Tool Layout Optimization */
 .tool-packet {
-    width: 100px;
-    height: 100px;
-    background-color: rgba(211, 47, 47, 0.2);
-    border: 2px solid #ff5252;
-    border-radius: 5px;
+    width: 110px;
+    height: 75px;
+    background-color: rgba(211, 47, 47, 0.4);
+    border: 3px solid #ff5252;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 5px;
     cursor: pointer;
-    margin-top: 20px;
-    transition: all 0.2s;
+    margin-top: 15px;
+    transition: all 0.15s;
 }
 
-.tool-packet:hover {
-    background-color: rgba(211, 47, 47, 0.4);
-    transform: scale(1.05);
+/* Explicit size containment for the Shovel Icon */
+.tool-packet img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.tool-packet span {
+    font-family: 'Bangers', cursive;
+    font-size: 1rem;
+    color: #fff;
+    text-transform: uppercase;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
 }
 
 .tool-packet.selected {
     border-color: #ffeb3b;
-    box-shadow: 0 0 15px #ffeb3b;
-    background-color: rgba(255, 235, 59, 0.2);
-}
-
-.tool-packet img {
-    width: 40px;
-    height: 40px;
-}
-
-.tool-packet span {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-top: 5px;
+    box-shadow: 0 0 15px #ffeb3b, inset -5px 0 10px rgba(0,0,0,0.3);
+    background-color: rgba(255, 235, 59, 0.25);
 }
 
 /* ==========================================
@@ -277,6 +374,18 @@ button:hover {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: bottom center;
+}
+
+/* Configuração do Zumbi Mais Forte (Conehead) */
+.zombie.zombie-conehead {
+    background-image: url('../assets/images/strongerZombie.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    
+    /* Optional: Since he is tougher, you can make his DOM element slightly larger */
+    width: 70px;
+    height: 95px; 
 }
 
 .projectile {

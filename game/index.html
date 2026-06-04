@@ -9,20 +9,22 @@
 <body>
 
     <div id="start-screen" class="screen active">
-        <h1>Lawn Defense</h1>
-        <p>Protect your base from the incoming horde!</p>
-        
-        <div class="difficulty-selector">
-            <label for="difficulty">Dificuldade:</label>
-            <select id="difficulty">
-                <option value="easy">Fácil</option>
-                <option value="normal" selected>Normal</option>
-                <option value="hard">Difícil</option>
-            </select>
-        </div>
+        <div class="menu-card">
+            <h1>Plants vs Zombies</h1>
+            <p>IComp's version</p>
+            
+            <div class="difficulty-selector">
+                <label for="difficulty">Dificuldade: </label>
+                <select id="difficulty">
+                    <option value="easy">Fácil</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Difícil</option>
+                </select>
+            </div>
 
-        <button id="btn-start">Iniciar Jogo</button>
-        <p id="high-score-display">Maior Onda Sobrevivida: <span id="highest-wave">0</span></p>
+            <button id="btn-start">Iniciar Jogo</button>
+            <p id="high-score-display">🏆 Recorde: Onda <span id="highest-wave">0</span></p>
+        </div>
     </div>
 
     <div id="game-screen" class="screen hidden">
@@ -51,7 +53,7 @@
             </div>
 
             <div id="shovel" class="tool-packet">
-                <img src="https://img.icons8.com/color/48/000000/shovel.png" alt="Shovel">
+                <img src="assets/images/Shovel.png" alt="Shovel">
                 <span>Remover</span>
             </div>
         </aside>
@@ -65,12 +67,14 @@
         <h2>Jogo Pausado</h2>
         <button id="btn-resume">Voltar ao Jogo</button>
         <button id="btn-pause-restart">Reiniciar Jogo</button>
+        <button id="btn-pause-exit" class="btn-exit">Sair do Jogo</button>
     </div>
 
     <div id="game-over-screen" class="screen hidden overlay">
         <h2>Fim de Jogo!</h2>
         <p>Você sobreviveu até a onda: <span id="final-wave"></span></p>
         <button id="btn-restart">Tentar Novamente</button>
+        <button id="btn-gameover-exit" class="btn-exit">Sair para o Menu</button>
     </div>
 
     <script src="js/main.js" type="module"></script>

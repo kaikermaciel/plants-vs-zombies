@@ -1,6 +1,7 @@
 import { gameState, activeZombies } from './state.js';
 import { updateUI } from './ui.js';
 import { playSFX } from './audio.js';
+import { saveHighScore } from './storage.js';
 
 /* ==========================================
    1. CONFIGURATION CONSTANTS
@@ -46,9 +47,9 @@ export function spawnZombie() {
     zombieDiv.classList.add('zombie', config.class);
     zombieDiv.style.left = '100%';
     
-    if (typeKey === 'conehead') {
-        zombieDiv.style.backgroundColor = 'brown'; 
-    }
+    // if (typeKey === 'conehead') {
+    //    zombieDiv.style.backgroundColor = 'brown'; 
+    // }
 
     lane.appendChild(zombieDiv);
 
@@ -91,6 +92,7 @@ export function updateZombies(deltaTime) {
             gameState.wave++;
             zombiesSpawnedInCurrentWave = 0;
             updateUI(gameState);
+            saveHighScore(gameState.wave);
         }
     }
 

@@ -23,7 +23,9 @@ const buttons = {
     pause: document.getElementById('btn-pause'),
     resume: document.getElementById('btn-resume'),
     restart: document.getElementById('btn-restart'),
-    pauseRestart: document.getElementById('btn-pause-restart')
+    pauseRestart: document.getElementById('btn-pause-restart'),
+    pauseExit: document.getElementById('btn-pause-exit'),       
+    gameoverExit: document.getElementById('btn-gameover-exit')   
 };
 
 const difficultySelect = document.getElementById('difficulty');
@@ -85,6 +87,17 @@ function gameOver() {
     playSFX('gameOver');
 }
 
+function exitGame() {
+    saveHighScore(gameState.wave);
+    
+    gameState.isRunning = false;
+    gameState.isPaused = false;
+    
+    stopBackgroundMusic();
+    loadHighScore();
+    switchScreen(screens.start);
+}
+
 /* ==========================================
    THE CORE GAME LOOP
    ========================================== */
@@ -118,6 +131,13 @@ buttons.resume.addEventListener('click', resumeGame);
 buttons.restart.addEventListener('click', startGame);
 if (buttons.pauseRestart) {
     buttons.pauseRestart.addEventListener('click', startGame);
+}
+
+if (buttons.pauseExit) {
+    buttons.pauseExit.addEventListener('click', exitGame);
+}
+if (buttons.gameoverExit) {
+    buttons.gameoverExit.addEventListener('click', exitGame);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
