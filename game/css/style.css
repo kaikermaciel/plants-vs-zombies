@@ -158,8 +158,41 @@ button:hover {
     transition: background 0.2s;
 }
 
-.seed-packet:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+.tool-packet {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(211, 47, 47, 0.2);
+    border: 2px solid #ff5252;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+}
+
+.tool-packet:hover {
+    background-color: rgba(211, 47, 47, 0.4);
+    transform: scale(1.05);
+}
+
+.tool-packet.selected {
+    border-color: #ffeb3b;
+    box-shadow: 0 0 15px #ffeb3b;
+    background-color: rgba(255, 235, 59, 0.2);
+}
+
+.tool-packet img {
+    width: 40px;
+    height: 40px;
+}
+
+.tool-packet span {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-top: 5px;
 }
 
 /* ==========================================

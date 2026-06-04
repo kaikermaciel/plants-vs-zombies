@@ -1,24 +1,27 @@
 /* ==========================================
-   1. LOCAL STORAGE MANAGER
+   STORAGE MANAGER (ES6 Module)
    ========================================== */
 
-const STORAGE_KEY = 'lawn_defense_high_wave';
+const HIGH_SCORE_KEY = 'lawnDefense_highScore';
 
-function saveHighScore(waveSurvived) {
-    const currentHighScore = localStorage.getItem(STORAGE_KEY) ? parseInt(localStorage.getItem(STORAGE_KEY)) : 0;
-    
-    // Se a onda atual for maior que o recorde antigo, atualiza
-    if (waveSurvived > currentHighScore) {
-        localStorage.setItem(STORAGE_KEY, waveSurvived);
-        console.log(`Novo Recorde Salvo: Onda ${waveSurvived}`);
+export function saveHighScore(wave) {
+    const currentHigh = getHighScore();
+    if (wave > currentHigh) {
+        localStorage.setItem(HIGH_SCORE_KEY, wave);
+        updateHighScoreDisplay(wave);
     }
 }
 
-function loadHighScore() {
-    const displayElement = document.getElementById('highest-wave');
-    const storedScore = localStorage.getItem(STORAGE_KEY);
-    
-    if (displayElement) {
-        displayElement.innerText = storedScore ? storedScore : '0';
-    }
+export function getHighScore() {
+    return parseInt(localStorage.getItem(HIGH_SCORE_KEY)) || 0;
+}
+
+export function loadHighScore() {
+    const high = getHighScore();
+    updateHighScoreDisplay(high);
+}
+
+function updateHighScoreDisplay(score) {
+    const display = document.getElementById('highest-wave');
+    if (display) display.innerText = score;
 }

@@ -1,19 +1,23 @@
+import { gameState, activePlants, activeProjectiles } from './state.js';
+import { updateUI } from './ui.js';
+import { playSFX } from './audio.js';
+
 /* ==========================================
    1. SELECTION & ACTIVE PLANTS
    ========================================== */
-let selectedPlantType = null;
-let selectedPlantCost = 0;
-const activePlants = []; 
-const activeProjectiles = []; 
+export let selectedPlantType = null;
+export let selectedPlantCost = 0;
+export let isShovelSelected = false;
 
-// Controle de tempo para os Sóis do Céu
-let nextSkySunTime = Date.now() + 4000; // O primeiro sol cai após 4 segundos de jogo
+let nextSkySunTime = Date.now() + 4000;
 
-document.addEventListener('DOMContentLoaded', () => {
+export function initPlantSelector() {
     const packets = document.querySelectorAll('.seed-packet');
+    const shovel = document.getElementById('shovel');
+
     packets.forEach(packet => {
         packet.addEventListener('click', () => {
-            packets.forEach(p => p.style.borderColor = '#fff');
+            clearSelection();
             const cost = parseInt(packet.dataset.cost);
             
             if (gameState.energy >= cost) {
@@ -23,17 +27,48 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-});
+
+    if (shovel) {
+        shovel.addEventListener('click', () => {
+            const wasShovel = isShovelSelected;
+            clearSelection();
+            if (!wasShovel) {
+                isShovelSelected = true;
+                shovel.classList.add('selected');
+            }
+        });
+    }
+}
+
+export function clearSelection() {
+    selectedPlantType = null;
+    selectedPlantCost = 0;
+    isShovelSelected = false;
+    document.querySelectorAll('.seed-packet').forEach(p => p.style.borderColor = '#fff');
+    const shovel = document.getElementById('shovel');
+    if (shovel) shovel.classList.remove('selected');
+}
 
 /* ==========================================
-   2. PLANTING LOGIC
+   2. PLANTING & REMOVING LOGIC
    ========================================== */
-function attemptPlacePlant(row, col, cellDiv) {
+export function attemptRemovePlant(row, col) {
+    const plantIndex = activePlants.findIndex(p => p.row === row && p.col === col);
+    if (plantIndex !== -1) {
+        const plant = activePlants[plantIndex];
+        plant.element.remove();
+        activePlants.splice(plantIndex, 1);
+        playSFX('plant'); // Reutiliza som de planta para feedback
+        return true;
+    }
+    return false;
+}
+export function attemptPlacePlant(row, col, cellDiv) {
     if (!selectedPlantType) return false;
     if (gameState.energy < selectedPlantCost) return false;
 
     gameState.energy -= selectedPlantCost;
-    if (typeof updateUI === 'function') updateUI(gameState);
+    updateUI(gameState);
 
     const plantDiv = document.createElement('div');
     let plantHealth = 100; 
@@ -55,37 +90,34 @@ function attemptPlacePlant(row, col, cellDiv) {
         type: selectedPlantType,
         row: row,
         col: col,
+        leftPercent: 22 + (col * 8.66),
+        widthPercent: 8.66,
         element: plantDiv,
         healthPool: plantHealth,
         maxHealth: plantHealth,
         lastShot: 0,
         cooldown: 2000,
         lastSun: performance.now(), 
-        sunCooldown: 8000 // Girassol gera sol a cada 8 segundos
+        sunCooldown: 8000 
     });
 
-    selectedPlantType = null;
-    selectedPlantCost = 0;
-    document.querySelectorAll('.seed-packet').forEach(p => p.style.borderColor = '#fff');
+    clearSelection();
     playSFX('plant');
     return true;
 }
 
 /* ==========================================
-   3. ENGINE LOOP (Tiros, Projeteis e Sóis)
+   3. ENGINE LOOP
    ========================================== */
-function updatePlants(deltaTime) {
+export function updatePlants(deltaTime) {
     const currentTime = performance.now();
     const now = Date.now();
 
-    // 🌤️ GERADOR DE SOL DO CÉU
     if (now >= nextSkySunTime) {
         spawnSkySun();
-        // Sorteia o próximo intervalo de queda entre 5 e 8 segundos
         nextSkySunTime = now + (Math.random() * 3000 + 5000);
     }
 
-    // Atualiza o comportamento de cada planta instalada
     activePlants.forEach(plant => {
         if (plant.type === 'peashooter') {
             const lane = document.getElementById(`lane-${plant.row}`);
@@ -97,7 +129,6 @@ function updatePlants(deltaTime) {
             }
         } 
         else if (plant.type === 'sunflower') {
-            // Girassol gerando Sol Extra
             if (currentTime - plant.lastSun >= plant.sunCooldown) {
                 spawnSunflowerSun(plant.row, plant.col);
                 plant.lastSun = currentTime; 
@@ -105,7 +136,6 @@ function updatePlants(deltaTime) {
         }
     });
 
-    // Move as ervilhas
     for (let i = activeProjectiles.length - 1; i >= 0; i--) {
         const proj = activeProjectiles[i];
         proj.leftPercent += proj.speed * (deltaTime / 16);
@@ -119,20 +149,16 @@ function updatePlants(deltaTime) {
 }
 
 /* ==========================================
-   4. SPAWNERS (Ervilhas e Sóis)
+   4. SPAWNERS
    ========================================== */
-function spawnProjectile(row, col) {
+export function spawnProjectile(row, col) {
     const lane = document.getElementById(`lane-${row}`);
     if (!lane) return;
 
     const projectileDiv = document.createElement('div');
     projectileDiv.classList.add('projectile');
     
-    const grassStart = 22;  
-    const grassWidth = 78;  
-    const cellWidth = grassWidth / 9; 
-    
-    const startLeft = grassStart + (col * cellWidth) + 5;
+    const startLeft = 22 + (col * 8.66) + 5;
     projectileDiv.style.left = `${startLeft}%`;
 
     lane.appendChild(projectileDiv);
@@ -141,12 +167,12 @@ function spawnProjectile(row, col) {
         element: projectileDiv,
         row: row,
         leftPercent: startLeft,
+        widthPercent: 1.76,
         speed: 0.4
     });
     playSFX('shoot');
 }
 
-// 🌻 Sol Extra gerado rente ao Girassol
 function spawnSunflowerSun(row, col) {
     const lane = document.getElementById(`lane-${row}`);
     if (!lane) return;
@@ -154,18 +180,15 @@ function spawnSunflowerSun(row, col) {
     const sunDiv = document.createElement('div');
     sunDiv.classList.add('sun');
     
-    const grassStart = 22;
-    const grassWidth = 78;
-    const cellWidth = grassWidth / 9;
-    const startLeft = grassStart + (col * cellWidth) + (cellWidth / 4);
+    const startLeft = 22 + (col * 8.66) + (8.66 / 4);
     
     sunDiv.style.left = `${startLeft}%`;
-    sunDiv.style.top = '15%'; // Brota certinho na altura da planta
+    sunDiv.style.top = '15%'; 
 
     sunDiv.addEventListener('click', (e) => {
         e.stopPropagation();
         gameState.energy += 25; 
-        if (typeof updateUI === 'function') updateUI(gameState);
+        updateUI(gameState);
         sunDiv.remove();
     });
 
@@ -174,7 +197,6 @@ function spawnSunflowerSun(row, col) {
     setTimeout(() => { if (sunDiv.parentNode) sunDiv.remove(); }, 8000);
 }
 
-// ☁️ Sol que cai aleatoriamente do céu do mapa
 function spawnSkySun() {
     const lawn = document.getElementById('lawn');
     if (!lawn) return;
@@ -182,29 +204,25 @@ function spawnSkySun() {
     const sunDiv = document.createElement('div');
     sunDiv.classList.add('sun');
 
-    // Sorteia uma posição horizontal na grama (entre 25% e 85% de largura)
     const randomLeft = Math.random() * 60 + 25;
-    // Sorteia onde ele vai parar de cair (entre 15% e 80% de altura do mapa)
     const targetTop = Math.random() * 65 + 15;
 
     sunDiv.style.left = `${randomLeft}%`;
-    sunDiv.style.top = '-60px'; // Começa escondido acima do mapa
+    sunDiv.style.top = '-60px'; 
 
     sunDiv.addEventListener('click', (e) => {
         e.stopPropagation();
         gameState.energy += 25;
-        if (typeof updateUI === 'function') updateUI(gameState);
+        updateUI(gameState);
         sunDiv.remove();
     });
 
     lawn.appendChild(sunDiv);
     playSFX('points');
-    // Ativa a queda através do CSS transition na próxima atualização visual
     setTimeout(() => {
         sunDiv.style.top = `${targetTop}%`;
     }, 50);
 
-    // Dá tempo para o sol cair e sumir caso o jogador o ignore
     setTimeout(() => {
         if (sunDiv.parentNode) sunDiv.remove();
     }, 11000);

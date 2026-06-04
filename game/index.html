@@ -36,18 +36,23 @@
 
         <aside id="plant-selector">
             <div class="seed-packet" data-plant-type="sunflower" data-cost="50">
-                <img src="assets/images/sunflower-icon.png" alt="Sunflower">
+                <img src="assets/images/sunflower.png" alt="Sunflower">
                 <span>50 ☀️</span>
             </div>
             
             <div class="seed-packet" data-plant-type="peashooter" data-cost="100">
-                <img src="assets/images/peashooter-icon.png" alt="Peashooter">
+                <img src="assets/images/peashooter.png" alt="Peashooter">
                 <span>100 ☀️</span>
             </div>
             
             <div class="seed-packet" data-plant-type="wallnut" data-cost="50">
-                <img src="assets/images/wallnut-icon.png" alt="Wallnut">
+                <img src="assets/images/wallnut-states.png" alt="Wallnut" style="object-fit: cover; object-position: left; width: 60px;">
                 <span>50 ☀️</span>
+            </div>
+
+            <div id="shovel" class="tool-packet">
+                <img src="https://img.icons8.com/color/48/000000/shovel.png" alt="Shovel">
+                <span>Remover</span>
             </div>
         </aside>
 
@@ -68,15 +73,7 @@
         <button id="btn-restart">Tentar Novamente</button>
     </div>
 
-    <script src="js/storage.js" defer></script>
-    <script src="js/audio.js" defer></script>
-    <script src="js/secrets.js" defer></script>
-    <script src="js/ui.js" defer></script>
-    <script src="js/board.js" defer></script>
-    <script src="js/plants.js" defer></script>
-    <script src="js/zombies.js" defer></script>
-    <script src="js/collision.js" defer></script>
-    <script src="js/main.js" defer></script>
+    <script src="js/main.js" type="module"></script>
 
 </body>
 </html>

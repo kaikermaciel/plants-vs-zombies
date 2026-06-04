@@ -1,31 +1,20 @@
 /* ==========================================
-   1. UI RENDERER
+   UI CONTROLLER (ES6 Module)
    ========================================== */
 
-// Atualiza todos os elementos de texto do HUD com base no gameState atual
-function updateUI(state) {
-    const energyCount = document.getElementById('energy-count');
-    const livesCount = document.getElementById('lives-count');
-    const waveCount = document.getElementById('wave-count');
+export function updateUI(state) {
+    const energyDisplay = document.getElementById('energy-count');
+    const livesDisplay = document.getElementById('lives-count');
+    const waveDisplay = document.getElementById('wave-count');
 
-    if (energyCount) energyCount.innerText = state.energy;
-    if (livesCount) livesCount.innerText = state.lives;
-    if (waveCount) waveCount.innerText = state.wave;
-
-    // Atualiza visualmente a seleção de pacotes (opcional: escurecer se não tiver sol suficiente)
-    renderSeedPackets(state.energy);
+    if (energyDisplay) energyDisplay.innerText = state.energy;
+    if (livesDisplay) livesDisplay.innerText = state.lives;
+    if (waveDisplay) waveDisplay.innerText = state.wave;
 }
 
-function renderSeedPackets(currentEnergy) {
-    const packets = document.querySelectorAll('.seed-packet');
-    packets.forEach(packet => {
-        const cost = parseInt(packet.dataset.cost);
-        if (currentEnergy < cost) {
-            packet.style.opacity = '0.5';
-            packet.style.cursor = 'not-allowed';
-        } else {
-            packet.style.opacity = '1';
-            packet.style.cursor = 'pointer';
-        }
-    });
+export function showFinalWave(wave) {
+    const finalWaveDisplay = document.getElementById('final-wave');
+    if (finalWaveDisplay) finalWaveDisplay.innerText = wave;
 }
+
+// Any other UI-specific manipulations can go here
