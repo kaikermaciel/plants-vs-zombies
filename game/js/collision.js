@@ -83,7 +83,7 @@ function checkCollisions(state) {
                 ) {
                     zombie.isEating = true; // Zumbi para de andar
                     zombie.element.classList.add('eating'); // ATIVA O PNG DELE COMENDO!
-
+                    playSFX('zombieGulp');
                     // Aplica decaimento de "vida" na planta baseado no tempo (frame)
                     if (!plant.healthPool) plant.healthPool = 100; // Vida interna da planta
                     

@@ -71,12 +71,14 @@ function startGame() {
     // Start the core loop
     gameState.lastFrameTime = performance.now();
     requestAnimationFrame(gameLoop);
+    initBackgroundMusic();
 }
 
 function pauseGame() {
     if (!gameState.isRunning) return;
     gameState.isPaused = true;
     switchScreen(screens.pause);
+    if (audioController.bgmInstance) audioController.bgmInstance.pause();
 }
 
 function resumeGame() {
@@ -85,6 +87,7 @@ function resumeGame() {
     // Reset frame time to avoid a massive jump in logic after resuming
     gameState.lastFrameTime = performance.now(); 
     requestAnimationFrame(gameLoop);
+    if (audioController.bgmInstance) audioController.bgmInstance.resume();
 }
 
 function gameOver() {
@@ -94,6 +97,8 @@ function gameOver() {
 
     // Extra Feature: Save to LocalStorage if storage.js is ready
     if (typeof saveHighScore === 'function') saveHighScore(gameState.wave);
+    stopBackgroundMusic();
+    playSFX('gameOver');
 }
 
 /* ==========================================

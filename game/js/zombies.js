@@ -50,6 +50,7 @@ function spawnZombie() {
         element: zombieDiv,
         isEating: false
     });
+    playSFX('zombieSpawn');
 }
 
 /* ==========================================

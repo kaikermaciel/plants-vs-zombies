@@ -67,7 +67,7 @@ function attemptPlacePlant(row, col, cellDiv) {
     selectedPlantType = null;
     selectedPlantCost = 0;
     document.querySelectorAll('.seed-packet').forEach(p => p.style.borderColor = '#fff');
-
+    playSFX('plant');
     return true;
 }
 
@@ -143,6 +143,7 @@ function spawnProjectile(row, col) {
         leftPercent: startLeft,
         speed: 0.4
     });
+    playSFX('shoot');
 }
 
 // 🌻 Sol Extra gerado rente ao Girassol
@@ -169,7 +170,7 @@ function spawnSunflowerSun(row, col) {
     });
 
     lane.appendChild(sunDiv);
-
+    playSFX('points');
     setTimeout(() => { if (sunDiv.parentNode) sunDiv.remove(); }, 8000);
 }
 
@@ -197,7 +198,7 @@ function spawnSkySun() {
     });
 
     lawn.appendChild(sunDiv);
-
+    playSFX('points');
     // Ativa a queda através do CSS transition na próxima atualização visual
     setTimeout(() => {
         sunDiv.style.top = `${targetTop}%`;
