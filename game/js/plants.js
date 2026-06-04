@@ -61,7 +61,7 @@ function attemptPlacePlant(row, col, cellDiv) {
         lastShot: 0,
         cooldown: 2000,
         lastSun: performance.now(), 
-        sunCooldown: 12000 // Girassol gera sol a cada 12 segundos
+        sunCooldown: 8000 // Girassol gera sol a cada 8 segundos
     });
 
     selectedPlantType = null;
@@ -81,8 +81,8 @@ function updatePlants(deltaTime) {
     // 🌤️ GERADOR DE SOL DO CÉU
     if (now >= nextSkySunTime) {
         spawnSkySun();
-        // Sorteia o próximo intervalo de queda entre 8 e 12 segundos
-        nextSkySunTime = now + (Math.random() * 4000 + 8000);
+        // Sorteia o próximo intervalo de queda entre 5 e 8 segundos
+        nextSkySunTime = now + (Math.random() * 3000 + 5000);
     }
 
     // Atualiza o comportamento de cada planta instalada

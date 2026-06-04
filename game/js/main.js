@@ -4,7 +4,7 @@
 const gameState = {
     isRunning: false,
     isPaused: false,
-    energy: 50,
+    energy: 150, // BALANCE: Começo turbinado para defesa inicial
     lives: 3,
     wave: 1,
     score: 0,
@@ -26,7 +26,8 @@ const buttons = {
     start: document.getElementById('btn-start'),
     pause: document.getElementById('btn-pause'),
     resume: document.getElementById('btn-resume'),
-    restart: document.getElementById('btn-restart')
+    restart: document.getElementById('btn-restart'),
+    pauseRestart: document.getElementById('btn-pause-restart') // NOVO: Mapeamento do botão de reiniciar na pausa
 };
 
 const difficultySelect = document.getElementById('difficulty');
@@ -52,9 +53,18 @@ function switchScreen(screenToShow) {
 }
 
 function startGame() {
+    // BUG FIX (Memória Fantasma): Limpa os arrays globais e o modelo do tabuleiro antes de iniciar/reiniciar
+    if (typeof activeZombies !== 'undefined') activeZombies.length = 0;
+    if (typeof activePlants !== 'undefined') activePlants.length = 0;
+    if (typeof activeProjectiles !== 'undefined') activeProjectiles.length = 0;
+    if (typeof gridModel !== 'undefined') gridModel.forEach(row => row.fill(null));
+
+    // BALANCE (Tempo de Respiro): Adiciona um intervalo de 15 segundos antes do primeiro zumbi surgir
+    if (typeof lastSpawnTime !== 'undefined') lastSpawnTime = performance.now() + 15000;
+
     // Reset Game State
     gameState.difficulty = difficultySelect.value;
-    gameState.energy = 50;
+    gameState.energy = 150; 
     gameState.lives = 3;
     gameState.wave = 1;
     gameState.isRunning = true;
@@ -87,7 +97,9 @@ function resumeGame() {
     // Reset frame time to avoid a massive jump in logic after resuming
     gameState.lastFrameTime = performance.now(); 
     requestAnimationFrame(gameLoop);
-    if (audioController.bgmInstance) audioController.bgmInstance.resume();
+    
+    // BUG FIX: Usa o método .play() nativo da API Web Audio
+    if (audioController.bgmInstance) audioController.bgmInstance.play();
 }
 
 function gameOver() {
@@ -115,10 +127,9 @@ function gameLoop(currentTime) {
     if (deltaTime >= 16) {
         
         // --- DELEGATE TO OTHER MODULES ---
-        // We pass deltaTime so animations/movement can be smooth regardless of lag
         if (typeof updateZombies === 'function') updateZombies(deltaTime);
         if (typeof updatePlants === 'function') updatePlants(deltaTime);
-        if (typeof checkCollisions === 'function') checkCollisions(gameState);
+        if (typeof checkCollisions === 'function') checkCollisions(gameState, deltaTime); // Passando deltaTime corrigido
         
         gameState.lastFrameTime = currentTime;
     }
@@ -140,6 +151,11 @@ buttons.start.addEventListener('click', startGame);
 buttons.pause.addEventListener('click', pauseGame);
 buttons.resume.addEventListener('click', resumeGame);
 buttons.restart.addEventListener('click', startGame);
+
+// NOVO: Vincula a ação de reiniciar ao clique do botão na tela de pausa
+if (buttons.pauseRestart) {
+    buttons.pauseRestart.addEventListener('click', startGame);
+}
 
 // Initialize High Score display on first page load
 window.addEventListener('DOMContentLoaded', () => {

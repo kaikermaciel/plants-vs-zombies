@@ -87,7 +87,7 @@ function checkCollisions(state) {
                     // Aplica decaimento de "vida" na planta baseado no tempo (frame)
                     if (!plant.healthPool) plant.healthPool = 100; // Vida interna da planta
                     
-                    plant.healthPool -= zombie.damage;
+                    plant.healthPool -= zombie.damage * (deltaTime / 1000);
 
                     // === O CÓDIGO DA NOZ ENTRA AQUI ===
                     // Se for uma Wall-nut, muda o frame do sprite baseado na porcentagem de vida restante

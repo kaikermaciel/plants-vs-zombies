@@ -1,96 +1,112 @@
 /* ==========================================
-   1. ZOMBIE STATE & CONFIGURATION
+   1. CONFIGURATION CONSTANTS (Central de Balanço)
    ========================================== */
-const activeZombies = []; // Lista global de zumbis na tela
-let lastSpawnTime = 0;
-let spawnInterval = 5000; // Tempo inicial de spawn (5 segundos)
+const BALANCE = {
+    BASE_SPAWN_INTERVAL: 6000,      // Tempo inicial entre zumbis (6s)
+    MIN_SPAWN_INTERVAL: 800,        // No late game, zumbis podem vir a cada 0.8s!
+    WAVE_SCALING_FACTOR: 0.65,      // Quanto menor, mais rápido o jogo acelera por onda
+    HORD_CHANCE_PER_WAVE: 0.15,     // Chance (15%) de spawnar um zumbi extra instantâneo
+    RANDOM_SPEED_MAX_BONUS: 0.02,   // Variável máxima de velocidade aleatória
+    CONEHEAD_SPAWN_CHANCE_BASE: 0.2 // Chance base do zumbi de cone aparecer
+};
 
-// Configurações de atributos por tipo de zumbi (Funcionalidade Adicional!)
+const activeZombies = [];
+let lastSpawnTime = 0;
+let spawnInterval = BALANCE.BASE_SPAWN_INTERVAL;
+let zombiesSpawnedInCurrentWave = 0;
+
 const ZOMBIE_TYPES = {
-    normal: { health: 3, speed: 0.05, class: 'zombie-normal', damage: 1 },
-    conehead: { health: 6, speed: 0.03, class: 'zombie-conehead', damage: 1.5 }
+    normal: { health: 3, speed: 0.025, class: 'zombie-normal', damage: 1 },
+    conehead: { health: 7, speed: 0.018, class: 'zombie-conehead', damage: 1.5 }
 };
 
 /* ==========================================
-   2. SPAWN LOGIC (Gerador de Hordas)
+   2. SPAWN LOGIC WITH RANDOMNESS
    ========================================== */
 function spawnZombie() {
     const rows = 5;
-    const randomRow = Math.floor(Math.random() * rows);
+    const randomRow = Math.floor(Math.random() * rows); // ALEATORIEDADE: Escolha da pista
     const lane = document.getElementById(`lane-${randomRow}`);
     if (!lane) return;
 
-    // Decide o tipo com base na Onda atual
-    const typeKey = (gameState.wave > 2 && Math.random() > 0.6) ? 'conehead' : 'normal';
+    // ALEATORIEDADE 1: Chance de vir Conehead escala dinamicamente com a onda atual
+    const coneheadChance = BALANCE.CONEHEAD_SPAWN_CHANCE_BASE + (gameState.wave * 0.05);
+    const typeKey = (Math.random() < coneheadChance && gameState.wave > 1) ? 'conehead' : 'normal';
     const config = ZOMBIE_TYPES[typeKey];
 
-    // Criação dinâmica do elemento no DOM
+    // ALEATORIEDADE 2: Desvia ligeiramente a velocidade padrão de cada zumbi individualmente
+    // Isso faz com que alguns zumbis ultrapassem outros na mesma pista, quebrando formações!
+    const randomSpeedBonus = (Math.random() * BALANCE.RANDOM_SPEED_MAX_BONUS) - (BALANCE.RANDOM_SPEED_MAX_BONUS / 2);
+    const finalSpeed = Math.max(0.01, config.speed + randomSpeedBonus);
+
     const zombieDiv = document.createElement('div');
     zombieDiv.classList.add('zombie', config.class);
+    zombieDiv.style.left = '100%';
     
-    // Configuração visual inicial (nascendo na extrema direita da pista)
-    let startLeftPercent = 100;
-    zombieDiv.style.left = `${startLeftPercent}%`;
-    
-    // Se quiser aplicar cores diferentes enquanto não tem sprites:
     if (typeKey === 'conehead') {
         zombieDiv.style.backgroundColor = 'brown'; 
     }
 
     lane.appendChild(zombieDiv);
 
-    // Registra o zumbi logicamente
     activeZombies.push({
         id: `zombie-${Date.now()}-${Math.random()}`,
         row: randomRow,
         health: config.health,
-        speed: config.speed,
+        speed: finalSpeed, // Aplicado aqui
         damage: config.damage,
-        leftPercent: startLeftPercent,
+        leftPercent: 100,
         element: zombieDiv,
         isEating: false
     });
+    
     playSFX('zombieSpawn');
 }
 
 /* ==========================================
-   3. ZOMBIE LOOP (Chamado pelo main.js)
+   3. CORE LOOP & DYNAMIC DIFFICULT
    ========================================== */
 function updateZombies(deltaTime) {
     const currentTime = performance.now();
 
-    // 1. Controle de Dificuldade progressiva por Fase/Onda
-    // Ajusta o intervalo de spawn dinamicamente baseado na onda e dificuldade
-    const baseModifier = gameState.difficulty === 'hard' ? 0.7 : gameState.difficulty === 'easy' ? 1.3 : 1.0;
-    spawnInterval = Math.max(2000, (6000 - (gameState.wave * 400)) * baseModifier);
+    // CONSTANTES + MATEMÁTICA: Redução não-linear do tempo de spawn.
+    // Conforme a onda sobre, o intervalo cai drasticamente usando potência, impedindo estabilização do jogador.
+    const difficultyModifier = gameState.difficulty === 'hard' ? 0.7 : gameState.difficulty === 'easy' ? 1.3 : 1.0;
+    spawnInterval = BALANCE.BASE_SPAWN_INTERVAL / Math.pow(gameState.wave, BALANCE.WAVE_SCALING_FACTOR);
+    spawnInterval = Math.max(BALANCE.MIN_SPAWN_INTERVAL, spawnInterval) * difficultyModifier;
 
     if (currentTime - lastSpawnTime >= spawnInterval) {
         spawnZombie();
-        lastSpawnTime = currentTime;
+        
+        // ALEATORIEDADE 3: Mecânica de "Horda Surpresa"
+        // Existe uma chance de nascer um segundo zumbi imediatamente em outra pista
+        if (Math.random() < (BALANCE.HORD_CHANCE_PER_WAVE * (gameState.wave / 2))) {
+            setTimeout(() => spawnZombie(), 300); 
+        }
 
-        // A cada 5 zumbis spawnados, há uma chance de subir a onda
-        if (activeZombies.length % 5 === 0) {
+        lastSpawnTime = currentTime;
+        zombiesSpawnedInCurrentWave++;
+
+        // Avanço de Onda equilibrado por quantidade gerada
+        if (zombiesSpawnedInCurrentWave >= (5 + gameState.wave * 2)) { 
             gameState.wave++;
+            zombiesSpawnedInCurrentWave = 0;
             if (typeof updateUI === 'function') updateUI(gameState);
         }
     }
 
-    // 2. Movimentação dos Zumbis vivos
+    // Movimentação
     for (let i = activeZombies.length - 1; i >= 0; i--) {
         const zombie = activeZombies[i];
 
-        // Se o zumbi não estiver travado comendo uma planta, ele anda para a esquerda
         if (!zombie.isEating) {
             zombie.leftPercent -= zombie.speed * (deltaTime / 16);
             zombie.element.style.left = `${zombie.leftPercent}%`;
         }
 
-        // Condição de Derrota: Zumbi invadiu a casa (passou do limite esquerdo 0%)
         if (zombie.leftPercent <= 0) {
-            gameState.lives -= 1; // Deduz uma vida do jogador
+            gameState.lives -= 1; 
             if (typeof updateUI === 'function') updateUI(gameState);
-
-            // Remove do DOM e do Array
             zombie.element.remove();
             activeZombies.splice(i, 1);
         }
