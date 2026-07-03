@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { MainController } from '../controllers/mainController.js';
 import { authMiddleware } from '../middlewares/auth.js';
+import { MajorController } from '../controllers/majorController.js';
 
 const router = Router();
 
@@ -17,5 +18,12 @@ router.get('/logout', MainController.logout);
 router.get('/', authMiddleware, MainController.game);
 router.get('/ranking', authMiddleware, MainController.ranking);
 router.post('/score', authMiddleware, MainController.saveScore);
+
+router.get('/majors', authMiddleware, MajorController.list);
+router.get('/majors/create', authMiddleware, MajorController.showCreate);
+router.post('/majors/create', authMiddleware, MajorController.handleCreate);
+router.post('/majors/delete', authMiddleware, MajorController.handleDeleteAjax); 
+
+
 
 export { router };

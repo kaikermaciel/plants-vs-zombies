@@ -1,0 +1,86 @@
+<div class="card p-4 shadow-sm border-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-success m-0">📚 Cursos Cadastrados</h2>
+        <a href="/majors/create" class="btn btn-success fw-bold">+ Novo Curso</a>
+    </div>
+
+    <table class="table table-striped table-dark text-center align-middle rounded overflow-hidden">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nome do Curso</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each majors}}
+                <tr id="row-{{this.id}}">
+                    <td class="fw-bold text-warning">{{this.code}}</td>
+                    <td>{{this.name}}</td>
+                    <td class="text-muted small">{{this.description}}</td>
+                    <td>
+                        <!-- Botão que engatilha o Modal passando o ID do registro[cite: 1] -->
+                        <button class="btn btn-outline-danger btn-sm" onclick="prepareDelete('{{this.id}}', '{{this.name}}')">Excluir</button>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<!-- Janela Modal de Confirmação Bootstrap (Requisito #14)[cite: 1] -->
+<div class="modal fade" id="deleteModal" map-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-danger">⚠️ Confirmar Operação</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza absoluta que deseja excluir o curso <strong id="modalMajorName"></strong>? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="executeDeleteAjax()">Confirmar e Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JavaScript Client-Side para Controle do Ajax (Requisito #14)[cite: 1] -->
+<script>
+    let targetIdToDelete = null;
+    let bootstrapModalInstance = null;
+
+    function prepareDelete(id, name) {
+        targetIdToDelete = id;
+        document.getElementById('modalMajorName').innerText = name;
+        bootstrapModalInstance = new bootstrap.Modal(document.getElementById('deleteModal'));
+        bootstrapModalInstance.show();
+    }
+
+    function executeDeleteAjax() {
+        if (!targetIdToDelete) return;
+
+        fetch('/majors/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: targetIdToDelete })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`row-${targetIdToDelete}`).remove();
+                bootstrapModalInstance.hide();
+            } else {
+                alert(data.message);
+                bootstrapModalInstance.hide();
+            }
+        })
+        .catch(err => {
+            console.error("Erro na comunicação Ajax:", err);
+            alert("Falha crítica ao tentar deletar o curso.");
+        });
+    }
+</script>

@@ -1,0 +1,22 @@
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm border-0">
+            <h2 class="mb-4 text-center text-success fw-bold">Criar Curso (IComp/UFAM)</h2>
+            <form action="/majors/create" method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nome do Curso</label>
+                    <input type="text" class="form-control" name="name" placeholder="Ex: Engenharia de Software" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Sigla / Código</label>
+                    <input type="text" class="form-control" name="code" placeholder="Ex: IE12" maxlength="4" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Descrição Institucional</label>
+                    <textarea class="form-control" name="description" rows="3" placeholder="Informações gerais sobre o curso..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success w-100 fw-bold">Salvar no Banco</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -14,8 +14,9 @@ export class MainController {
   }
 
   // Exercício #6: Rota Geradora Autónoma de Lorem Ipsum
-  static lorem(req: Request, res: Response) {
-    const paragraphsCount = parseInt(req.params.paragraphs) || 1;
+  static lorem(req: RequestWithSession, res: Response) {
+    const rawParam = Array.isArray(req.params.paragraphs) ? req.params.paragraphs[0] : req.params.paragraphs;
+    const paragraphsCount = parseInt(rawParam ?? '1', 10) || 1;
     const paragraphsArray = Array.from({ length: paragraphsCount }, () => lorem.generateParagraphs(1));
     res.render('lorem', { paragraphs: paragraphsArray, userLogged: !!(req.session as any)?.userId });
   }
