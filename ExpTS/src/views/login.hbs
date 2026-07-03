@@ -1,0 +1,27 @@
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card p-4 shadow-sm border-0">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4 fw-bold text-dark">Acessar Portal</h2>
+                <p class="text-muted text-center small mb-4">Insira suas credenciais para entrar no jogo e registrar seus recordes</p>
+
+                <form action="/login" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">E-mail Acadêmico</label>
+                        <input type="email" class="form-control p-2.5" id="email" name="email" placeholder="nome@icomp.ufam.edu.br" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Senha de Acesso</label>
+                        <input type="password" class="form-control p-2.5" id="password" name="password" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 p-2.5 fw-bold fs-5 shadow-sm mb-3">Entrar no Gramado</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted small">Não possui uma conta? <a href="/signup" class="text-success fw-bold text-decoration-none">Cadastre-se aqui</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

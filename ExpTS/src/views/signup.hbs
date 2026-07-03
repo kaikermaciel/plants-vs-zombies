@@ -1,0 +1,49 @@
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm border-0">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-3 fw-bold text-dark">Criar Nova Conta</h2>
+                <p class="text-muted text-center small mb-4">Cadastre-se no sistema integrado para começar a competir no ranking global</p>
+
+                <form action="/signup" method="POST">
+                    <div class="mb-3">
+                        <label for="fullname" class="form-label fw-semibold">Nome Completo</label>
+                        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Seu nome aqui" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Endereço de E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="seu-email@icomp.ufam.edu.br" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="majorId" class="form-label fw-semibold">Curso de Graduação</label>
+                        <select class="form-select" id="majorId" name="majorId" required>
+                            <option value="" disabled selected>Selecione seu curso...</option>
+                            {{#each majors}}
+                                <option value="{{this.id}}">{{this.code}} - {{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-semibold">Senha</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="repeat_password" class="form-label fw-semibold">Repetir Senha</label>
+                            <input type="password" class="form-control" id="repeat_password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 p-2.5 fw-bold fs-5 shadow-sm">Finalizar Cadastro</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted small">Já possui registro? <a href="/login" class="text-primary fw-bold text-decoration-none">Realizar Login</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

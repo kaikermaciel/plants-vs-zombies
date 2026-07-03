@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defensores do DOM</title> 
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="start-screen" class="screen active">
+        <div class="menu-card">
+            <h1>Plants vs Zombies</h1>
+            <p>IComp's version</p>
+            
+            <div class="difficulty-selector">
+                <label for="difficulty">Dificuldade: </label>
+                <select id="difficulty">
+                    <option value="easy">Fácil</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Difícil</option>
+                </select>
+            </div>
+
+            <button id="btn-start">Iniciar Jogo</button>
+            <p id="high-score-display">🏆 Recorde: Onda <span id="highest-wave">0</span></p>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        
+        <header id="ui-bar">
+            <div class="stat">☀️ Energia: <span id="energy-count">50</span></div>
+            <div class="stat">❤️ Vidas: <span id="lives-count">3</span></div>
+            <div class="stat">🌊 Onda: <span id="wave-count">1</span></div>
+            <button id="btn-pause">Pausar</button>
+        </header>
+
+        <aside id="plant-selector">
+            <div class="seed-packet" data-plant-type="sunflower" data-cost="50">
+                <img src="assets/images/sunflower.png" alt="Sunflower">
+                <span>50 ☀️</span>
+            </div>
+            
+            <div class="seed-packet" data-plant-type="peashooter" data-cost="100">
+                <img src="assets/images/peashooter.png" alt="Peashooter">
+                <span>100 ☀️</span>
+            </div>
+            
+            <div class="seed-packet" data-plant-type="wallnut" data-cost="50">
+                <img src="assets/images/wallnut-states.png" alt="Wallnut" style="object-fit: cover; object-position: left; width: 60px;">
+                <span>50 ☀️</span>
+            </div>
+
+            <div id="shovel" class="tool-packet">
+                <img src="assets/images/Shovel.png" alt="Shovel">
+                <span>Remover</span>
+            </div>
+        </aside>
+
+        <main id="lawn">
+        </main>
+
+    </div>
+
+    <div id="pause-screen" class="screen hidden overlay">
+        <h2>Jogo Pausado</h2>
+        <button id="btn-resume">Voltar ao Jogo</button>
+        <button id="btn-pause-restart">Reiniciar Jogo</button>
+        <button id="btn-pause-exit" class="btn-exit">Sair do Jogo</button>
+    </div>
+
+    <div id="game-over-screen" class="screen hidden overlay">
+        <h2>Fim de Jogo!</h2>
+        <p>Você sobreviveu até a onda: <span id="final-wave"></span></p>
+        <button id="btn-restart">Tentar Novamente</button>
+        <button id="btn-gameover-exit" class="btn-exit">Sair para o Menu</button>
+    </div>
+
+    <script src="js/main.js" type="module"></script>
+
+</body>
+</html>

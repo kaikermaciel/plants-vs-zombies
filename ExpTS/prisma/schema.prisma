@@ -1,0 +1,45 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Major {
+  id          String   @id @default(uuid())
+  name        String
+  code        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+
+  @@map("majors")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  fullname     String
+  email        String        @unique
+  password     String
+  majorId      String
+  major        Major         @relation(fields: [majorId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  gameSessions GameSession[]
+
+  @@map("users")
+}
+
+model GameSession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  score     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("game_sessions")
+}

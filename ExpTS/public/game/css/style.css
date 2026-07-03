@@ -1,0 +1,492 @@
+/* ==========================================
+   1. GLOBAL RESETS & VARIABLES
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&family=Segoe+UI:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --lawn-green: #4caf50;
+    --lawn-dark: #388e3c;
+    --ui-brown: #4e342e;
+    --ui-light: #8d6e63;
+    --pvz-yellow: #f4ff81;
+}
+
+body {
+    background-color: #111;
+    color: white;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* ==========================================
+   2. STATE MANAGEMENT (Crucial for grading)
+   ========================================== */
+/* The JavaScript will toggle these classes to switch game states */
+.hidden {
+    display: none !important;
+}
+
+.active {
+    display: flex;
+}
+
+.screen {
+    width: 100vw;
+    height: 100vh;
+    background-color: #333;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    border-radius: 0;
+}
+
+/* Overlays for Pause and Game Over screens */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+/* ==========================================
+   3. MENU SCREENS STYLING
+   ========================================== */
+#start-screen {
+    justify-content: center;
+    align-items: center;
+    
+    /* Set your brand new mainScreen background image */
+    background-image: url('../assets/images/mainScreen.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.6);
+}
+
+/* The Menu Tombstone Card: Centers and makes text readable over the graphic */
+#start-screen .menu-card {
+    background: rgba(46, 34, 21, 0.85); /* Semi-transparent graveyard wood tint */
+    padding: 40px;
+    border-radius: 15px;
+    border: 5px solid #2d1f10;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 500px;
+}
+
+#start-screen h1 {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 3.5rem;
+    color: #aeea00; /* Toxic neon green */
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    
+    /* Comic book thick dark text outlines */
+    -webkit-text-stroke: 2px #1b5e20;
+    text-shadow: 4px 4px 0px #000;
+}
+
+#start-screen p {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #e0e0e0;
+    font-size: 1rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button {
+    font-family: 'Bangers', cursive;
+    padding: 12px 35px;
+    font-size: 1.8rem;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    background: linear-gradient(#795548, #4e342e); /* Wood grain gradient */
+    color: var(--pvz-yellow);
+    border: 3px solid #3e2723;
+    border-radius: 8px;
+    margin-top: 15px;
+    box-shadow: 0 5px 0px #271711, 0 8px 15px rgba(0,0,0,0.5);
+    transition: all 0.1s ease-in-out;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(#8d6e63, #5d4037);
+    color: #fff;
+    box-shadow: 0 7px 0px #271711, 0 10px 20px rgba(0,0,0,0.6);
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0px #271711, 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.difficulty-selector {
+    margin-top: 10px;
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.difficulty-selector select {
+    font-family: 'Bangers', cursive;
+    font-size: 1.2rem;
+    padding: 5px 15px;
+    background: #3e2723;
+    color: var(--pvz-yellow);
+    border: 2px solid #5d4037;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+}
+
+#high-score-display {
+    font-family: 'Bangers', cursive;
+    font-size: 1.3rem;
+    margin-top: 20px;
+    color: #ffb300; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+/* ==========================================
+   4. GAME PLAYING SCREEN LAYOUT
+   ========================================== */
+#game-screen {
+    display: grid;
+    grid-template-rows: 60px 1fr; /* Top UI bar, then the rest */
+    grid-template-columns: 150px 1fr; /* Left Sidebar, then the Lawn */
+    grid-template-areas: 
+        "ui ui"
+        "sidebar lawn";
+    background-color: #87CEEB; /* Sky blue background */
+}
+
+/* Top UI Bar */
+#ui-bar {
+    grid-area: ui;
+    background-color: var(--ui-brown);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 3px solid #111;
+    padding: 0 20px;
+}
+
+.stat {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#btn-pause {
+    margin-top: 0;
+    padding: 5px 15px;
+}
+
+#plant-selector {
+    grid-area: sidebar;
+    background-color: var(--ui-light);
+    border-right: 3px solid #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 5px;
+    gap: 12px;
+    z-index: 20;
+    box-shadow: inset -5px 0 10px rgba(0,0,0,0.3);
+}
+
+/* Optimized Seed Packet Dimensions and Layout */
+.seed-packet {
+    width: 110px;
+    height: 95px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 3px solid #fff;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+}
+
+.seed-packet:hover {
+    transform: scale(1.04);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Forces images to sit neatly centered inside slots without bleeding out */
+.seed-packet img {
+    max-width: 55px;
+    max-height: 55px;
+    object-fit: contain; 
+}
+
+/* Thematic Text Overlay styling for costs */
+.seed-packet span {
+    font-family: 'Bangers', cursive;
+    font-size: 1.1rem;
+    color: var(--pvz-yellow);
+    text-shadow: 1px 1px 2px #000;
+    margin-top: 2px;
+}
+
+/* Shovel Tool Layout Optimization */
+.tool-packet {
+    width: 110px;
+    height: 75px;
+    background-color: rgba(211, 47, 47, 0.4);
+    border: 3px solid #ff5252;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.15s;
+}
+
+/* Explicit size containment for the Shovel Icon */
+.tool-packet img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.tool-packet span {
+    font-family: 'Bangers', cursive;
+    font-size: 1rem;
+    color: #fff;
+    text-transform: uppercase;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+.tool-packet.selected {
+    border-color: #ffeb3b;
+    box-shadow: 0 0 15px #ffeb3b, inset -5px 0 10px rgba(0,0,0,0.3);
+    background-color: rgba(255, 235, 59, 0.25);
+}
+
+/* ==========================================
+   5. THE LAWN (GRID & LANES)
+   ========================================== */
+#lawn {
+    grid-area: lawn;
+    display: flex;
+    flex-direction: column;
+    
+    /* Configurações do novo background inseridas aqui: */
+    background-image: url('../assets/images/background-day.jpg');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.lane {
+    flex: 1; /* Each lane takes up exactly 1/5th of the lawn height */
+    display: flex;
+    position: relative; /* CRITICAL: Allows absolute positioning of zombies inside the lane */
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+    
+    /* Empurra o início das colunas para começar exatamente onde a grama começa */
+    padding-left: 22%; 
+}
+
+.cell {
+    flex: 1; /* 9 cells per lane (configured in JS) */
+    border-right: 1px dashed rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================
+   6. GAME ENTITIES (Plants, Zombies, Peas)
+   ========================================== */
+.plant {
+    width: 60px;
+    height: 60px;
+}
+
+.peashooter {
+    width: 75px;  /* Aumentado para compensar o espaço invisível da imagem */
+    height: 75px; /* Deixa proporcional */
+    z-index: 5;
+
+    /* Puxa a imagem da disparervilha */
+    background-image: url('../assets/images/peashooter.png');
+    background-size: 145%; /* Dá um zoom para descartar o espaço em branco da direita */
+    background-repeat: no-repeat;
+    background-position: -15px center; /* Move o corpinho dela para o centro real do quadrado */
+}
+
+.zombie {
+    width: 65px;    /* Ajuste na largura para a proporção do zumbi */
+    height: 85px;   /* Ajuste na altura para ele não ficar achatado */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;    /* Garante que o zumbi ande por cima do cenário */
+
+    /* Aqui entra o seu novo zumbi: */
+    background-image: url('../assets/images/regularZombie.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+/* Estado do zumbi quando está atacando uma planta */
+.zombie.eating {
+    /* Troca a imagem para o sprite de mordida */
+    background-image: url('../assets/images/zombie-eating.png');
+    
+    /* Mantém as mesmas proporções para o zumbi não mudar de tamanho ou piscar */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+/* Configuração do Zumbi Mais Forte (Conehead) */
+.zombie.zombie-conehead {
+    background-image: url('../assets/images/strongerZombie.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    
+    /* Optional: Since he is tougher, you can make his DOM element slightly larger */
+    width: 70px;
+    height: 95px; 
+}
+
+.projectile {
+    width: 15px;
+    height: 15px;
+    background-color: #76ff03; /* Bright green pea */
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Example Sprite Animation Class */
+.peashooter-idle {
+    width: 40px; 
+    height: 40px; 
+    background-image: url('../assets/images/peashooter-idle.png');
+    background-repeat: no-repeat;
+    animation: playSprite 1s steps(8) infinite;
+    transform: scale(1.5); /* Make it a bit bigger to fit the 60px cell */
+}
+
+@keyframes playSprite {
+    from { background-position: 0px 0px; }
+    to { background-position: -320px 0px; }
+}
+
+/* Configuração do Girassol */
+.sunflower {
+    width: 60px;
+    height: 60px;
+    z-index: 5;
+    background-image: url('../assets/images/sunflower.png'); /* Altere para o nome real do seu arquivo se necessário */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Configuração do Sol com Imagem */
+.sun {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    cursor: pointer;
+    z-index: 50; /* Fica por cima de tudo para facilitar o clique */
+    
+    /* Configura sua imagem */
+    background-image: url('../assets/images/sun.png'); /* ⚠️ Mude para o nome exato do seu arquivo de imagem do Sol */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    /* Animação de pulsação e brilho */
+    animation: sunPulse 1.5s infinite alternate ease-in-out;
+    
+    /* Transição suave para o Sol do céu cair de forma natural */
+    transition: top 3.5s ease-out;
+}
+
+/* Animação que faz a imagem pulsar e brilhar */
+@keyframes sunPulse {
+    from { 
+        transform: scale(1); 
+        filter: drop-shadow(0 0 6px #fdd835); 
+    }
+    to { 
+        transform: scale(1.12); 
+        filter: drop-shadow(0 0 16px #fdd835); 
+    }
+}
+
+/* Animação para o Sol ficar pulando/brilhando */
+@keyframes sunPulse {
+    from { transform: scale(1); box-shadow: 0 0 10px #fdd835; }
+    to { transform: scale(1.15); box-shadow: 0 0 22px #fdd835; }
+}
+
+/* ==========================================
+   7. WALLNUT SPRITE STATES
+   ========================================== */
+.wallnut {
+    width: 60px;
+    height: 60px;
+    background-image: url('../assets/images/wallnut-states.png');
+    background-repeat: no-repeat;
+    background-size: 180px 60px; /* Redimensiona a tira de 3 frames para o tamanho do grid */
+    transition: background-position 0.2s ease;
+}
+
+/* Frame 1: Inteira */
+.wallnut-healthy {
+    background-position: 0px 0px;
+}
+
+/* Frame 2: Rachada */
+.wallnut-damaged {
+    background-position: -60px 0px;
+}
+
+/* Frame 3: Quase Quebrando */
+.wallnut-broken {
+    background-position: -120px 0px;
+}
